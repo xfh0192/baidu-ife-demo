@@ -14,65 +14,69 @@
 
 <script type="text/javascript">
 	
-	var aqiData = [
-	  ["北京", 90],
-	  ["上海", 50],
-	  ["福州", 10],
-	  ["广州", 50],
-	  ["成都", 90],
-	  ["西安", 100]
-	];
+var aqiData = [
+  ["北京", 90],
+  ["上海", 50],
+  ["福州", 10],
+  ["广州", 50],
+  ["成都", 90],
+  ["西安", 100]
+];
 
-	(function(){
-		/*
-		  在注释下方编写代码
-		  遍历读取aqiData中各个城市的数据
-		  将空气质量指数大于60的城市显示到aqi-list的列表中
-		*/
-		//创建文档碎片节点
-		var fragment = document.createDocumentFragment();
-		//遍历列表
-		for(var i = 0, len = aqiData.length; i < len; i++){
-			var row = aqiData[i];
-			if(row && row[1] && row[1] >= 60){
-				var htmlTemp = getHtmlTemp(row),
-					node = document.createElement("li");
-				node.innerHTML = htmlTemp;
-				fragment.appendChild(node)
-			}
-		}
-		//将碎片节点加入文档
-		var listDOM = document.querySelector("#aqi-list");
-		listDOM.appendChild(fragment);
+(function(){
+/*
+*  在注释下方编写代码
+*  遍历读取aqiData中各个城市的数据
+*  将空气质量指数大于60的城市显示到aqi-list的列表中
+*/
+//创建文档碎片节点
+var fragment = document.createDocumentFragment();
+//遍历列表
+for(var i = 0, len = aqiData.length; i < len; i++){
+	var row = aqiData[i];
+	if(row && row[1] && row[1] >= 60){
+		var htmlTemp = getHtmlTemp(row),
+			node = document.createElement("li");
+		node.innerHTML = htmlTemp;
+		fragment.appendChild(node)
+	}
+}
+//将碎片节点加入文档
+var listDOM = document.querySelector("#aqi-list");
+listDOM.appendChild(fragment);
 
-		//顺便，将所有数据按排序，再输出一次
-		aqiData.sort(function(a, b){
-			//现在这样是从小到大排列
-			//a和b反过来，就会是从大到小了
-			return a[1] - b[1];
-		})
-		var sortUlDOM = document.createElement("ul"),
-			sortFragment = document.createDocumentFragment();
-		for(var i = 0, len = aqiData.length; i < len; i++){
-			var row = aqiData[i];
-			if(row && row[1]){
-				var htmlTemp = getHtmlTemp(row),
-					node = document.createElement("li");
-				node.innerHTML = htmlTemp;
-				sortFragment.appendChild(node)
-			}
-		}
-		sortUlDOM.appendChild(sortFragment);
-		document.body.appendChild(sortUlDOM);
 
-		//用于获取html模板
-		function getHtmlTemp(data){
-			var temp = "";
-			if(data){
-				temp = "<li>" + data[0] + "&nbsp;的空气污染指数为：" + data[1] + "</li>";
-			}
-			 return temp;
-		}
-	})()
+
+//顺便，将所有数据按排序，再输出一次
+aqiData.sort(function(a, b){
+//现在这样是从小到大排列
+//a和b反过来，就会是从大到小了
+	return a[1] - b[1];
+})
+
+
+var sortUlDOM = document.createElement("ul"),
+	sortFragment = document.createDocumentFragment();
+for(var i = 0, len = aqiData.length; i < len; i++){
+	var row = aqiData[i];
+	if(row && row[1]){
+		var htmlTemp = getHtmlTemp(row),
+			node = document.createElement("li");
+		node.innerHTML = htmlTemp;
+		sortFragment.appendChild(node)
+	}
+}
+sortUlDOM.appendChild(sortFragment);
+document.body.appendChild(sortUlDOM);
+
+//用于获取html模板
+function getHtmlTemp(data){
+	var temp = "";
+	if(data){
+		temp = "<li>" + data[0] + "&nbsp;的空气污染指数为：" + data[1] + "</li>";
+	}
+	 return temp;
+}
+})()
 
 </script>

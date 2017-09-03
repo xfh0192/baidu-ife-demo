@@ -1,0 +1,40 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>demo-16</title>
+    
+  </head>
+<body>
+
+  <!-- 
+    这个demo实现的并不是很好
+    1、尝试简化浏览器每次都回流重绘整一个table的过程，所以添加删除只会针对一条记录
+    2、使用事件代理
+    3、但是对于view-model层的结构来说，删除操作只更新了view层，model则会将全部同名的数据都清除了。。
+
+    因此总的来说，可能按原思路，每次更新都重新渲染一次table会更容易写，但性能消耗多一点
+  -->
+  <div>
+    <label>城市名称：<input id="aqi-city-input" type="text"></label><br>
+    <label>空气质量指数：<input id="aqi-value-input" type="text"></label><br>
+    <button id="add-btn">确认添加</button>
+  </div>
+  <table id="aqi-table">
+   
+    <tr>
+      <td>城市</td><td>空气质量</td><td>操作</td>
+    </tr>
+  <!--
+    <tr>
+      <td>北京</td><td>90</td><td><button>删除</button></td>
+    </tr>
+    <tr>
+      <td>北京</td><td>90</td><td><button>删除</button></td>
+    </tr>
+   -->
+  </table>
+
+</body>
+</html>
+<script src="task.js"></script>
