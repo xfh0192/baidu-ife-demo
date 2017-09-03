@@ -5,12 +5,13 @@
 	对transition或者animation的active执行translate时，渲染层会合成为合成层（某些特殊的渲染层会被认为是合成层，合成层都有单独的绘制层，而其他不是合成层的渲染层，则和第一个拥有绘制层的父层公用一个），而每一个绘制层都会提供位图，需要利用GPU绘制到屏幕上
 
 	可以查看chrome的timeline，会发现composite（合成）层消耗了大量时间
+	http://taobaofed.org/blog/2016/04/25/performance-composite/
 */
 @keyframes bounding {
-	0% {transform: translate3d(0,100%,0);}
-	100% {transform: translate3d(0,0,0);}
-	/*0% {bottom: -300px;}
-	100% {bottom: 0;}*/
+	/*0% {transform: translate3d(0,100%,0);}
+	100% {transform: translate3d(0,0,0);}*/
+	0% {bottom: -300px;}
+	100% {bottom: 0;}
 }
 
 .aqi-chart-wrap{
