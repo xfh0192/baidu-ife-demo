@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>demo-20</title>
+	<meta charset="utf-8">
+
+<style type="text/css">
+@keyframes leftFadeIn{
+	0%{ transform: translate3d(-100%,0,0); }
+	100%{ transform: translate3d(0,0,0); }
+}
+@keyframes rightFadeIn{
+	0%{ transform: translate3d(100%,0,0); }
+	100%{ transform: translate3d(0,0,0); }
+}
+@keyframes fadeOutTop{
+	0%{ transform: translate3d(0,0,0); }
+	100%{transform: translate3d(0,-200%,0); opacity: 0;}
+}
+li{
+	list-style: none;
+	padding: 5px 10px;
+	border-radius: 3px;
+	display: inline-block;
+	margin: 0 10px 0 0;
+	background: #e22;
+	color: #fff;
+}
+li span{
+	background: #39c;
+}
+
+/*ul li:last-child{
+	animation: rightFadeIn 0.2s ease;
+}
+ul li:first-child{
+	animation: leftFadeIn 0.2s ease;
+}*/
+</style>
+</head>
+<body>
+
+	<div id="operate">
+		<!-- <input type="text" id="num"/> -->
+		<textarea type="text" id="num" placeholder="请输入想要插入的内容"></textarea>
+		<button id="leftInput">左侧插入</button>
+		<button id="rightInput">右侧插入</button>
+		<button id="leftOutput">左侧弹出</button>
+		<button id="rightOutput">右侧弹出</button>
+		<p>
+			<input type="text" id="keyword"/>
+			<button id="search">搜索</button>
+		</p>
+	</div>
+
+	<ul id="queue"></ul>
+
+</body>
+</html>
+
+<script type="text/javascript" src="task.js"></script>
