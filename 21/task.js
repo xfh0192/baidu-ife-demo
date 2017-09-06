@@ -8,7 +8,23 @@
 String.prototype.toTrim = function(){
 	return this.replace(/^([^0-9a-zA-Z\u4e00-\u9fa5]*)|([^0-9a-zA-Z\u4e00-\u9fa5]*)$/gm, '')
 }
-
+Array.prototype.every = Array.prototype.every || function(fn, thisObj){
+	for(var k = 0, length = this.length; k < length; k++){
+		if(!fn.call(thisObj, this[k], k, this)){
+			return false;
+		}
+	}
+	return true;
+}
+Array.prototype.indexOf = Array.prototype.indexOf || function(searchElement, fromIndex){
+	var fromIndex = fromIndex * 1 || 0;		// 乘以1转换为数字类型
+	for(var k = fromIndex, length = this.length; k < length; k++){
+		if(this[k] === searchElement){
+			return fromIndex;
+		}
+	}
+	return -1;
+}
 //组件
 var app = {
 	util: {}
@@ -63,9 +79,14 @@ app.util = {
 	具体逻辑
 */
 //封装为一个类
-var createTagsComponent = (function(){
-
-	var modelQUeue = [];	//作为model的数组
+var createTagsComponent = (function(util){
+	var $ = util.$;
+	var EventUtil = {
+		addHandler : util.addHandler,
+		removeHandler : util.removeHandler,
+		getEvent : util.getEvent,
+		getTarget : util.getTarget
+	}
 	
 	var componentTpl = "<div id='tagsComponent'>"
 					+ "		<textarea type='text'></textarea>"
@@ -73,30 +94,115 @@ var createTagsComponent = (function(){
 					+ "		<ul></ul>"
 					+ "</div>";
 
-	function fns(){
+	//构造函数
+	function fns(btnText, areaText){
+		//作为model的数组
+		this.modelQueue = [];
+
 		//创建container
 		var component = document.createElement("div");
-		div.innerHTML = componentTpl;
+		component.innerHTML = componentTpl;
+
+		document.body.appendChild(component);
+
+		//使用输入的文字代替默认的文字
+		if(btnText){
+			$("button", component).innerText = btnText;
+		}
+		if(areaText){
+			$("textarea", component).placeholder = areaText;
+		}
 
 		this.node = component;
+		this.addListener();
 	}
 
 	fns.prototype.getInput = function(){
-		var value = $("textarea", this.node).value, result;
+		var value = $("textarea", this.node).value, array = [], result;
 		if(value){
-			result = value.toTrim().split(/[^0-9a-zA-Z\u4e00-\u9fa5]*/);
+			/*result = [];
+			array = value.toTrim().split(/[^0-9a-zA-Z\u4e00-\u9fa5]+/);
+			//去重
+			array.every(function(item){
+				if(result.indexOf(item) < 0){
+					result.push(item)
+				}
+				return true;
+			})*/
+			result = value.toTrim().split(/[^0-9a-zA-Z\u4e00-\u9fa5]+/);
+
 		}
 		return result;
 	}
 
+	//增加tags
 	fns.prototype.addTags = function(){
-		var addBtns = $("button", this.node);
-		
+		var addBtns = $("button", this.node), 
+			ul = $("ul", this.node), 
+			fragment = document.createDocumentFragment(),
+			inputArr = this.getInput();
+
+		for(var i = 0, len = inputArr.length; i < len; i++){
+			var item = inputArr[i];
+			//先检查去重
+			
+			var li = document.createElement("li");
+			li.innerText = item;
+			fragment.appendChild(li);
+
+			this.modelQueue.push(inputArr[i])
+			console.log(this.modelQueue)
+		}
+		ul.appendChild(fragment);
 	}
 	
-	
+	//添加监听
+	fns.prototype.addListener = function(){
+		var self = this;
+		var addBtn = $("button", this.node);
+		var ul = $("ul", this.node);
+
+		//对btn的操作
+		EventUtil.addHandler(addBtn, "click", btnClickHandler);
+		function btnClickHandler(){
+			self.addTags()
+		}
+
+		//对tag列表的操作
+		EventUtil.addHandler(ul, "click", ulClickHandler);
+		EventUtil.addHandler(ul, "mouseover", ulMouseOverHandler);
+		EventUtil.addHandler(ul, "mouseout", ulMouseOutHandler);
+
+		function ulClickHandler(e){
+			var target = EventUtil.getTarget(e);
+			if(target && target.nodeName == "LI"){
+				target.style.cssText = "animation: fadeOutTop 0.2s ease forwards";
+
+				setTimeout(() => {
+					target.parentNode.removeChild(target);
+
+					// 点击删除节点后，重新获取数组
+					var lis = ul.querySelectorAll("li");
+					self.modelQueue = [];
+					for(var i = 0, len = lis.length; i < len; i++){
+						self.modelQueue.push(lis[i].innerText)
+					}
+					console.log(self.modelQueue);
+
+				}, 200)
+			}
+		}
+
+		function ulMouseOverHandler(){
+
+		}
+		function ulMouseOutHandler(){
+
+		}
+	}
 
 	return fns;
-})();
+})(app.util);
 
 var a = new createTagsComponent();
+var b = new createTagsComponent("添加爱好", "在此处填写需要添加的爱好吧");
