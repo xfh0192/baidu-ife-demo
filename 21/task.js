@@ -139,21 +139,51 @@ var createTagsComponent = (function(util){
 	fns.prototype.addTags = function(){
 		var addBtns = $("button", this.node), 
 			ul = $("ul", this.node), 
+			lis = ul.querySelectorAll("li"),
 			fragment = document.createDocumentFragment(),
-			inputArr = this.getInput();
+			inputArr = filterSame(this.getInput(), this.modelQueue);	//先检查去重,得到新增加的项
+			//inputArr = this.getInput();
 
+		this.modelQueue = this.modelQueue.concat(inputArr)	//将新增加的项加进数据模型数组中
+
+		//假如tag超过10个，从前面开始删除多出来的
+		if(this.modelQueue.length > 10){
+			//一次输入超过10个，截取输入数组的最后10个
+			inputArr.splice(0, inputArr.length - 10)
+			//总数超过10个，从头开始删除
+			var delLen = this.modelQueue.length - 10;
+			this.modelQueue.splice(0, delLen);
+			if(lis.length){	//以防直接输入了10个以上，找不到li
+				for(var i = 0; i < delLen; i++){
+					ul.removeChild(lis[i])
+				}
+			}
+		}
+
+		//重新渲染
 		for(var i = 0, len = inputArr.length; i < len; i++){
 			var item = inputArr[i];
-			//先检查去重
 			
 			var li = document.createElement("li");
 			li.innerText = item;
+			li.style.cssText = "animation: rightFadeIn 0.2s ease forwards";
 			fragment.appendChild(li);
-
-			this.modelQueue.push(inputArr[i])
-			console.log(this.modelQueue)
+			//console.log(this.modelQueue)
 		}
+
+		console.log(this.modelQueue)
 		ul.appendChild(fragment);
+	}
+
+	//数组去重函数
+	function filterSame(array, modelQueue){
+		var result = [];
+		array.forEach(function(item){
+			if(modelQueue.indexOf(item) < 0){
+				result.push(item)
+			}
+		})
+		return result;
 	}
 	
 	//添加监听
