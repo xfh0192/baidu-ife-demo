@@ -67,6 +67,7 @@ function init(){
 				方法1：最后执行timeInterval，逐个node执行一次，将前后node样式改变
 				方法2：向list中添加node的步骤  改为--> 每次向数组中添加一个highLight定时器，最后开始遍历的时候逐一触发
 			*/
+			textList = [];
 			if(timerList.length){
 				clearInterval(timer);
 				timerList = [];
@@ -86,7 +87,7 @@ function init(){
 				if(!text){
 					return;
 				}
-				widthOrder(box_1, "root");
+				widthOrder(box_1, text, "root");
 			}
 
 			//开始逐一运行定时器
@@ -106,7 +107,7 @@ function init(){
 			if(!node){
 				return;
 			}
-			textList.push(node.innerText)
+			textList.push(node)
 			timerList.push(function(){
 				highLight(node)
 			})
@@ -115,35 +116,59 @@ function init(){
 			}
 		}
 		//广度遍历搜索
-		function widthOrder(node, mark){
+		function widthOrder(node, searchText, mark){
 			if(!node){
 				return;
-			}
+			 }
+			var nodeText = node.innerText.split(/\s+/)[0];
+			 //先加入根节点
 			if(mark == "root"){
-				textList.push(node)
+				textList.push(nodeText)
 				timerList.push(function(){
-					highLight(node)
+					var matched = false;
+					if(nodeText && nodeText == searchText){
+						matched = true;
+					}
+					highLight(node, matched)
 				})
-				widthOrder(node)
-				return
+				widthOrder(node, searchText)
+				return;
 			}
+			//将当前节点的子节点全加入数组
 			var children = node.children, len = children.length;
 			for(var i = 0; i < len; i++){
-				textList.push(node.innerText)
-				timerList.push(function(){
-					highLight(node)
-				})
-				widthOrder(children[i])
+				var nodeText = children[i].innerText.split(/\s+/)[0];
+				textList.push(nodeText)
+				//这里要用闭包
+				timerList.push((function(node){
+					var nodeText = node.innerText.split(/\s+/)[0], matched = false;
+					return function(){
+						if(nodeText && nodeText == searchText){
+							matched = true;
+						}
+						highLight(node, matched)
+					}
+				})(children[i]))
+			}
+			//再分别对每个子节点遍历
+			for(var i = 0; i < len; i++){
+				widthOrder(children[i], searchText)
 			}
 		}
 
 	}
 
-	function highLight(node){
+	function highLight(node, matched){
+		if(!node){
+			return;
+		}
 		node.style.cssText = "background: #39c;"
-		setTimeout(() => {
-			node.style.cssText = ""
-		}, 500)
+		if(!matched){
+			setTimeout(() => {
+				node.style.cssText = ""
+			}, 500)
+		}
+		
 	}
 
 }
