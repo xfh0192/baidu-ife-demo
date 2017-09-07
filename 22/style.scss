@@ -1,0 +1,34 @@
+$width: 200px;
+$height: 100px;
+@mixin getBoxSize($multiple){
+	height: $height * $multiple;
+	width: $width * $multiple;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-around;
+	align-items: center;
+}
+
+div{
+	border: 1px solid #ccc;
+	background: #fff;
+	transition: all 0.5s ease;
+}
+.grade-1{
+	@include getBoxSize(4);
+	margin: 100px auto;
+	.grade-2{
+		@include getBoxSize(1.5);
+		div{
+			@include getBoxSize(0.5);
+		}
+	}
+}
+
+p{
+	text-align: center;
+	button{
+		padding: 5px 10px;
+		margin: 0 10px;
+	}
+}

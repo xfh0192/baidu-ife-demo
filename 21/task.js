@@ -117,20 +117,11 @@ var createTagsComponent = (function(util){
 		this.addListener();
 	}
 
+	//获取输入的值，切割为数组返回
 	fns.prototype.getInput = function(){
 		var value = $("textarea", this.node).value, array = [], result;
 		if(value){
-			/*result = [];
-			array = value.toTrim().split(/[^0-9a-zA-Z\u4e00-\u9fa5]+/);
-			//去重
-			array.every(function(item){
-				if(result.indexOf(item) < 0){
-					result.push(item)
-				}
-				return true;
-			})*/
 			result = value.toTrim().split(/[^0-9a-zA-Z\u4e00-\u9fa5]+/);
-
 		}
 		return result;
 	}
@@ -177,9 +168,10 @@ var createTagsComponent = (function(util){
 
 	//数组去重函数
 	function filterSame(array, modelQueue){
-		var result = [];
+		var result = [], array = array || [];
+		//从modelQueue里面去重 和 将输入部分里面的重复项去掉
 		array.forEach(function(item){
-			if(modelQueue.indexOf(item) < 0){
+			if(modelQueue.indexOf(item) < 0 && result.indexOf(item) < 0){
 				result.push(item)
 			}
 		})
@@ -223,11 +215,17 @@ var createTagsComponent = (function(util){
 			}
 		}
 
-		function ulMouseOverHandler(){
-
+		function ulMouseOverHandler(e){
+			var target = EventUtil.getTarget(e);
+			if(target && target.nodeName == "LI"){
+				target.innerText = "删除" + target.innerText;
+			}
 		}
-		function ulMouseOutHandler(){
-
+		function ulMouseOutHandler(e){
+			var target = EventUtil.getTarget(e);
+			if(target && target.nodeName == "LI"){
+				target.innerText = target.innerText.replace(/删除/gm, "");
+			}
 		}
 	}
 

@@ -1,0 +1,35 @@
+div {
+  border: 1px solid #ccc;
+  background: #fff;
+  transition: all 0.5s ease; }
+
+.grade-1 {
+  height: 400px;
+  width: 800px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: center;
+  margin: 100px auto; }
+  .grade-1 .grade-2 {
+    height: 150px;
+    width: 300px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    align-items: center; }
+    .grade-1 .grade-2 div {
+      height: 50px;
+      width: 100px;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-around;
+      align-items: center; }
+
+p {
+  text-align: center; }
+  p button {
+    padding: 5px 10px;
+    margin: 0 10px; }
+
+/*# sourceMappingURL=style.css.map */
