@@ -55,11 +55,13 @@ function getNextElement(node){
 }*/
 //------------------------------------------------------------------------
 
+
+//遍历相关操作的绑定
 /*
 	绑定3个按钮的事件
 */
-function init(){
-	var btnBox = $("p"),
+function traversalInit(){
+	var btnBox = $("#traversalBtnBox"),
 		frontBtn = $(".front", btnBox),
 		middleBtn = $(".middle", btnBox),
 		backBtn = $(".back", btnBox),
@@ -217,7 +219,36 @@ function init(){
 		}
 		
 	}
+}
 
+//增删的操作绑定
+function modifyInit(){
+	var divContainer = $("#div-container"),
+		modifyBtnBox = $("#modifyBtnBox"),
+		delNodeBtn = $("#delNodeBtn", modifyBtnBox),
+		selectedNode;
+
+	EventUtil.addHandler(divContainer, "click", selectDivHandler)
+
+
+	function selectDivHandler(e){
+		var target = EventUtil.getTarget(e);
+		if(target.nodeName == "DIV"){
+			if(selectedNode){
+				selectedNode.style.cssText = "";
+			}
+			// if(selectedNode && selectedNode == target){
+			// 	return;
+			// }
+			selectedNode = target;
+			selectedNode.style.cssText = "background: #ffac44";
+		}
+	}
+}
+
+function init(){
+	traversalInit()
+	modifyInit()
 }
 
 init();

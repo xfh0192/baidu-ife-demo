@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>demo-22</title>
+	<title>demo-24</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 
-	<div class="grade-1">
+	<div id="div-container" class="grade-1">
 		one
 		<div class="grade-2">
 			two
@@ -24,13 +24,17 @@
 		</div>
 	</div>
 
-	<p>
+	<p id="traversalBtnBox">
 		<button class="front">前序算法</button>
 		<!-- <button class="middle">中序算法</button>
 		<button class="back">后序算法</button> -->
 		<input type="text" id="searchText"/>
 		<button id="widthSearchBtn">广度优先搜索</button>
 		<button id="depthSearchBtn">深度优先搜索</button>
+	</p>
+
+	<p id="modifyBtnBox">
+		<button id="delNodeBtn">删除选定节点</button>
 	</p>
 
 </body>
