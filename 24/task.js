@@ -226,23 +226,73 @@ function modifyInit(){
 	var divContainer = $("#div-container"),
 		modifyBtnBox = $("#modifyBtnBox"),
 		delNodeBtn = $("#delNodeBtn", modifyBtnBox),
+		addNodeBtn = $("#addNodeBtn", modifyBtnBox),
 		selectedNode;
 
-	EventUtil.addHandler(divContainer, "click", selectDivHandler)
+	EventUtil.addHandler(divContainer, "click", selectDivHandler())
+	EventUtil.addHandler(delNodeBtn, "click", delDivHandler)
+	EventUtil.addHandler(addNodeBtn, "click", addDivHandler)
 
+	//select一个div的逻辑
+	function selectDivHandler(){
+		var ctrlMark;
+		return function(e){
+			var target = EventUtil.getTarget(e);
+			if(target.nodeName == "DIV"){
+				if(ctrlMark){
+					return;
+				}
+				ctrlMark = true;
+				changeSelectedNode(target)
 
-	function selectDivHandler(e){
-		var target = EventUtil.getTarget(e);
-		if(target.nodeName == "DIV"){
+				setTimeout(() => {
+					ctrlMark = false;
+				}, 200)
+			}
+		}
+	}
+	function changeSelectedNode(target){
+		//当选中与上一次相同的节点时
+		if(selectedNode == target){
+			if(selectedNode.style.cssText){
+				selectedNode.style.cssText = ""
+			}
+			else{
+				selectedNode.style.cssText = "background: #ffac44";
+			}
+		}
+		//当选中与上一次不同的节点时
+		else{
+			target.style.cssText = "background: #ffac44";
 			if(selectedNode){
 				selectedNode.style.cssText = "";
 			}
-			// if(selectedNode && selectedNode == target){
-			// 	return;
-			// }
 			selectedNode = target;
-			selectedNode.style.cssText = "background: #ffac44";
 		}
+	}
+	//删除一个div的逻辑
+	function delDivHandler(){
+		if(!selectedNode){
+			alert("请先选择一个节点")
+			return;
+		}
+		selectedNode.parentNode.removeChild(selectedNode)
+	}
+	//添加一个div的逻辑
+	function addDivHandler(){
+		if(!selectedNode){
+			alert("请先选择一个节点");
+			return;
+		}
+		var text = $("#addNodeInput", modifyBtnBox).value;
+		if(!text){
+			alert("请输入新节点的内容");
+			return;
+		}
+
+		var newNode = document.createElement("div");
+		newNode.innerText = text;
+		selectedNode.appendChild(newNode);
 	}
 }
 
