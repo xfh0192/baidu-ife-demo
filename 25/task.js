@@ -74,7 +74,7 @@ var listComponent = (function listComponent(util){
 			fragment = document.createDocumentFragment();
 
 		rootNode.id = "nodeTree"
-		fragment.className = "level-0"; 
+		fragment.className = "level-0";
 		this.buildNodeTree(structure, fragment);
 
 		rootNode.appendChild(fragment)
@@ -88,32 +88,64 @@ var listComponent = (function listComponent(util){
 	fns.prototype.buildNodeTree = function(structure, parentNode){
 		for(var i = 0, len = structure.length; i < len; i++){
 			var item = structure[i],
-				node = document.createElement("div"),
-				title = document.createElement("label"),
 				structure = structure || {};
 
-			//添加title
-			title.innerText = item.text || "";
-			node.appendChild(title);
+			var node = buildNewDiv(item.text, parentNode, "", item.children)
 
-			//添加classname
-			var levelStr = parentNode.className.match(/level\-\d/g), levelNum;
-			if(levelStr){
-				levelNum = parseInt(levelStr[0].split("-")[1]) + 1;
-				node.className = "level-" + levelNum;
-				node.style.cssText = "margin-left: " + 30*levelNum + "px";
-			}
-			
 			if(item.children && item.children.length){
-				//添加折叠展开箭头
-				var arrow = document.createElement("i");
-				arrow.className = "arrow-down";
-				title.insertBefore(arrow, title.childNodes[0])
 				//递归
 				fns.prototype.buildNodeTree.call(this, item.children, node);
 			}
-			parentNode.appendChild(node);
 		}
+	}
+
+	//构建一个新的div节点
+	function buildNewDiv(text, parentNode, operateMark, children){
+		var node = document.createElement("div"),
+			title = document.createElement("label");
+
+		//添加title
+		title.innerText = text || "";
+		node.appendChild(title);
+
+		//添加classname
+		var levelStr = parentNode.className.match(/level\-\d/g), levelNum;
+		if(levelStr){
+			levelNum = parseInt(levelStr[0].split("-")[1]) + 1;
+			node.className = "level-" + levelNum;
+			node.style.cssText = "margin-left: " + 30*levelNum + "px";
+		}
+
+		//添加添加按钮
+		var addBtn = document.createElement("i");
+		addBtn.className = "addBtn";
+		addBtn.innerText = "添加子节点";
+		title.appendChild(addBtn);
+
+		//添加删除按钮
+		var delBtn = document.createElement("i");
+		delBtn.className = "delBtn";
+		delBtn.innerText = "删除节点";
+		title.appendChild(delBtn);
+
+		parentNode.appendChild(node);
+
+		//处理有children的情况
+		if(children && children.length){
+			//添加折叠展开箭头
+			var arrow = document.createElement("i");
+			arrow.className = "arrow-down";
+			title.insertBefore(arrow, title.childNodes[0])
+		}
+		//假如新添加节点，则要给父节点添加箭头
+		if(operateMark == "add" && !$("arrow-down", parentNode)){
+			//添加折叠展开箭头
+			var arrow = document.createElement("i");
+			arrow.className = "arrow-down";
+			parentNode.childNodes[0].insertBefore(arrow, parentNode.childNodes[0].childNodes[0])
+		}
+
+		return node;
 	}
 
 	//折叠/展开某一个节点
@@ -147,7 +179,32 @@ var listComponent = (function listComponent(util){
 			if(target.nodeName != "I"){
 				return;
 			}
-			toggleNode(target)
+			switch(target.className){
+				case "arrow-right": 
+					toggleNode(target); 
+					break;
+				case "arrow-down" : 
+					toggleNode(target);
+					break;
+				case "addBtn" : 
+					addBtnHandler(target);
+					break;
+				case "delBtn" : 
+					delBtnHandler(target);
+					break;
+			}
+		}
+	}
+
+	function addBtnHandler(node){
+		var text = prompt("请输入新节点的内容", "一个新节点"),
+			parentNode;
+		if(node && text){
+			parentNode = node.parentNode.parentNode;
+			buildNewDiv(text, parentNode, "add")
+		}
+		else{
+			!text && alert("请输入节点内容")
 		}
 	}
 

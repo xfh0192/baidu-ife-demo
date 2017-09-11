@@ -22,3 +22,11 @@ div.level-1 label>i.arrow-right{
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
 }
+div.level-1 label>i.addBtn,
+div.level-1 label>i.delBtn{
+  display: none;
+}
+div.level-1 label:hover>i.addBtn,
+div.level-1 label:hover>i.delBtn{
+  display: inline-block;
+}
