@@ -55,6 +55,19 @@ function getNextElement(node){
 }*/
 //------------------------------------------------------------------------
 
+/*
+	菜单dom结构为
+	<div class="level-1">
+		<label>
+			<i class="arrow-down"></i>
+			text
+			<i class="addBtn"></i>
+			<i class="delBtn"></i>
+		</label>
+		<div></div>		// children
+	</div>
+*/
+
 var app = {
 	util: {
 		$ : $,
@@ -74,9 +87,17 @@ var listComponent = (function listComponent(util){
 			fragment = document.createDocumentFragment();
 
 		rootNode.id = "nodeTree"
+
+		//插入输入框和查找按钮
+		var searchBox = document.createElement("div");
+		searchBox.innerHTML = "<input type='text' id='searchText'/><button id='searchBtn'>搜索</button>";
+		rootNode.appendChild(searchBox);
+
+		//创建树形列表dom
 		fragment.className = "level-0";
 		this.buildNodeTree(structure, fragment);
 
+		//插入页面
 		rootNode.appendChild(fragment)
 		parentNode.appendChild(rootNode)
 
@@ -138,7 +159,7 @@ var listComponent = (function listComponent(util){
 			title.insertBefore(arrow, title.childNodes[0])
 		}
 		//假如新添加节点，则要给父节点添加箭头
-		if(operateMark == "add" && !$("arrow-down", parentNode)){
+		if(operateMark == "add" && !($(".arrow-down", parentNode)) || $(".arrow-right", parentNode)){
 			//添加折叠展开箭头
 			var arrow = document.createElement("i");
 			arrow.className = "arrow-down";
@@ -159,6 +180,7 @@ var listComponent = (function listComponent(util){
 
 		arrow.className = arrow.className.indexOf("arrow-down") >= 0 ? "arrow-right" : "arrow-down";
 
+		//从一个节点开始向所有子节点递归展开/折叠
 		for(var i = 1, len = parentDiv.children.length; i < len; i++){
 			var childDivNode = parentDiv.children[i];
 			childDivNode.style.display = childDivNode.style.display == "none" ? "block" : "none";
@@ -168,10 +190,52 @@ var listComponent = (function listComponent(util){
 		}
 	}
 
+	//让父节点展开/折叠(通过label标签查找)
+	function toggleParentNode(label){
+		if(!label){
+			return;
+		}
+		var parentDivNode = label.parentNode.parentNode;	//上一级的div节点
+
+		for(var i = 1, len = parentDivNode.children.length; i < len; i++){
+			var childDivNode = parentDivNode.children[i];
+			childDivNode.style.display = "block";
+		}
+
+		if(parentDivNode.id != "nodeTree"){
+			toggleParentNode($("label", parentDivNode));
+		}
+	}
+
 	//事件监听
 	fns.prototype.initEvent = function(rootNode){
 
-		//折叠/展开节点
+		//搜索节点内容
+		var searchBtn = $("#searchBtn", rootNode);
+		EventUtil.addHandler(searchBtn, "click", searchHandler)
+
+		function searchHandler(e){
+			var searchText = $("#searchText", rootNode).value;
+
+			var labels = rootNode.querySelectorAll("label");
+			for(var i = 0, len = labels.length; i < len; i++){
+				var label = labels[i];
+				// console.log(label.innerText);
+				if(searchText && label.innerText.indexOf(searchText) >= 0){
+					label.style.cssText = "color: red;"
+					searchText && toggleParentNode(label)
+				}
+				else{
+					label.style.cssText = null;
+				}
+			}
+
+			if(!searchText){
+				alert("请输入搜索内容")
+			}
+		}
+
+		//折叠/展开节点、增加节点、删除节点
 		EventUtil.addHandler(rootNode, "click", toggleNodeHandler)
 
 		function toggleNodeHandler(e){
@@ -206,6 +270,12 @@ var listComponent = (function listComponent(util){
 		else{
 			!text && alert("请输入节点内容")
 		}
+	}
+
+	function delBtnHandler(node){
+		var labelNode = node.parentNode,
+			divNode = labelNode.parentNode;
+		divNode.parentNode.removeChild(divNode)
 	}
 
 	return fns;
