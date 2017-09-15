@@ -1,0 +1,47 @@
+
+.arrow{
+	height: 0;
+	width: 0;
+	display: inline-block;
+}
+.arrow{
+	display: inline-block;
+	margin-right: 10px;
+}
+.arrow-none{
+	display: none;
+}
+.arrow-down{
+	border-top: 10px solid #39c;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+}
+.arrow-right{	
+	border-top: 5px solid transparent;
+	border-left: 10px solid #39c;
+	border-bottom: 5px solid transparent;
+}
+
+.hide{
+	display: none;
+}
+.show{
+	display: block;
+}
+
+#rootNode div{
+	margin: 8px 25px;
+}
+
+#rootNode i.addBtn, 
+#rootNode i.delBtn{
+	display: inline-block;
+	height: 20px; 
+	width: 20px;
+	text-align: center;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	margin: 0 5px;
+	font-style: normal;
+	cursor: pointer;
+}
