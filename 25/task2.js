@@ -6,6 +6,9 @@ var $ = function(selector, node){
 }
 /*
 	根据参考的代码，自己写一次
+	** 参考的代码，给了我很大启示：
+	1、将数据、方法、节点本身作为一个模型存在dom中，需要进行操作的时候直接调用目标dom内的方法就可以
+	2、深度、广度遍历：使用栈队列（stack）和 while 循环，提供一个可行的遍历搜索算法
 */
 
 /*
@@ -122,6 +125,7 @@ var component = (function(){
 			if(!this.childs.length){
 				return;
 			}
+			//仅改变可见性，不改变颜色
 			for(var i = 0, len = this.childs.length; i < len; i++){
 				this.childs[i].render(false, true);
 			}
@@ -129,7 +133,7 @@ var component = (function(){
 			return this;
 		},
 		//渲染节点样式(折叠箭头等)
-		render: function(arrow, visible){
+		render: function(arrow, visible, toHighlight, deHighlignt){
 			if(arrow){
 				if(this.isLeaf()){
 					$(".arrow", this.selfElement).className = "arrow arrow-none";
@@ -146,7 +150,14 @@ var component = (function(){
 				var className = this.selfElement.className;
 				this.selfElement.className = className.indexOf("hide") >= 0 ? className.replace("hide", "show") : className.replace("show", "hide");
 			}
-
+			//对于样式显示，要分为3种情况（红色、黑色、不改变），因此用两个变量
+			if(toHighlight){
+				// $("label", this.selfElement).style.cssText = "color: red"
+				$("label", this.selfElement).className = "mark";
+			}
+			if(deHighlignt){
+				$("label", this.selfElement).className = "";
+			}
 		}
 
 	}
@@ -189,34 +200,85 @@ var component = (function(){
 				}
 
 				//开始遍历搜索
-				search(text, treeComponent);
+				var resultList = search(text, treeComponent);
+				console.log(resultList)
 
 				//对找到的节点改成红色
-				// console.log(resultList);
+				var pathNode;
 				for(var i = 0, len = resultList.length; i < len; i++){
 					var item = resultList[i];
-					$("label", item.selfElement).style.cssText = "color: red;"
+					//$("label", item.selfElement).style.cssText = "color: red;"
+					pathNode = item;
+					
+
+					//展开沿途的父节点
+					while(pathNode.parent != treeComponent){
+						if(!pathNode.parent.isLeaf() && pathNode.parent.isFolded()){
+							pathNode.parent.toggleFolder()
+						}
+						pathNode = pathNode.parent
+					}
+					item.render(false, false, true)
 				}
 			}
 
 			//深度优先搜索
-			function search(text, child){
-				for(var i = 0 , len = child.childs.length; i < len; i++){
-					var item = child.childs[i];
-					//重置所有节点的颜色
-					$("label", item.selfElement).style.cssText = "";
-					if(item.text.indexOf(text) >= 0){
-						resultList.push(item);
+			// function search(text, child){
+			// 	for(var i = 0 , len = child.childs.length; i < len; i++){
+			// 		var item = child.childs[i];
+			// 		//重置所有节点的颜色
+			// 		$("label", item.selfElement).style.cssText = "";
+			// 		if(item.text.indexOf(text) >= 0){
+			// 			resultList.push(item);
+			// 		}
+			// 		search(text, item)
+			// 	}
+			// }
+			//深度优先搜索2
+			function search(text, node){
+				var resultList = [],
+					stack = [],
+					item;
+				stack.push(node);
+				while(stack.length){
+					item = stack.shift();
+					item.render(false, false, false, true)
+					// item.text == text && item.render(false,false,true)
+					item.text == text && resultList.push(item)
+					//将子节点加入栈
+					if(item.childs && item.childs.length){
+						for(var len = item.childs.length; len; len--){
+							stack.unshift(item.childs[len - 1])
+						}
 					}
-					search(text, item)
 				}
+				return resultList;
 			}
+			//广度优先搜索
+			// function search(text, node){
+			// 	var resultList = [], 	//存放结果
+			// 		queue = [],			//存放待处理队列
+			// 		current = node;
+			// 	queue.push(node);
+			// 	while(queue.length){
+			// 		current = queue.shift();	//获取队首节点
+			// 		current.render(false, false, true)	//处理颜色
+			// 		if(current.text = text){
+			// 			resultList.push(current)
+			// 		}
+			// 		//将所有子节点加入待处理队列
+			// 		for(var i = 0, len = current.childs.length; i < len; i++){
+			// 			queue.push(current.childs[i]);
+			// 		}
+			// 	}
+			// }
 		}
 
 		return treeComponent;
 	}
 })()
 
+//-----------------生成dom的demo--------------------------
 var tree = component("#rootNode", "rootNode");
 tree.addChild("list1-1").addChild("list1-2");
 tree.childs[0].addChild("list1-1-1")

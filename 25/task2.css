@@ -45,3 +45,7 @@
 	font-style: normal;
 	cursor: pointer;
 }
+
+label.mark{
+	color: red;
+}
